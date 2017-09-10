@@ -5,6 +5,7 @@ from chef.Channel import *
 
 class Query(abc):
 
+    @abc.abstractmethod
     def apply(self, channel : Channel) -> str:
         raise NotImplementedError("")
 

@@ -2,6 +2,7 @@ import abc
 
 class NewMessageListener(abc):
 
+    @abc.abstractmethod
     def receive_new_message(self, message : str):
         raise NotImplementedError("")
 
@@ -13,6 +14,7 @@ class MessagingAgent(abc):
         if listener:
             self.listeners.append(listener)
 
+    @abc.abstractmethod
     def send_message(self, message : str):
         raise NotImplementedError("")
 
