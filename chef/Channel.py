@@ -1,18 +1,13 @@
 from chef.MessageParser import *
-from chef.messaging.MessagingAgent import *
 
-
-class Channel(NewMessageListener):
+class Channel(abc):
 
     def __init__(self):
-        self.messaging_agent = None
+        pass
 
-    def set_messaging_agent(self, agent : MessagingAgent):
-        agent.add_new_message_listener(self)
-        self.messaging_agent = agent
-
+    @abc.abstractmethod
     def send_message(self, message : str):
-        self.messaging_agent.send_message(message)
+        raise NotImplementedError()
 
     def receive_new_message(self, message : str):
         query = MessageParser.parse_message(message)
