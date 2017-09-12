@@ -22,13 +22,14 @@ class Configuration(abc.ABC):
 
 
 class DiscordConfiguration(Configuration):
+    configuration_type = "discord"
 
     def __init__(self, settings : shelve):
-        DiscordDaemon.subscribe_to_channel(settings["discord-channel-id"], self)
+        DiscordDaemon.subscribe_to_channel(settings.get("discord-channel-id"), self)
         super().__init__(settings)
 
     def send_message(self, message : str):
-        asyncio.run_coroutine_threadsafe(DiscordDaemon.send_message(self.settings["discord-channel-id"], message), DiscordDaemon.client.loop)
+        asyncio.run_coroutine_threadsafe(DiscordDaemon.send_message(self.settings.get("discord-channel-id"), message), DiscordDaemon.client.loop)
 
 
 
@@ -36,7 +37,7 @@ class ConfigurationCreator():
 
     @staticmethod
     def create_configuration_from_settings(settings : shelve):
-        if (settings["configuration-type"] == "discord"):
+        if (settings.get("configuration-type") == DiscordConfiguration.configuration_type):
             configuration = DiscordConfiguration(settings)
             ConfigurationCreationQuery().apply(configuration)
         else:

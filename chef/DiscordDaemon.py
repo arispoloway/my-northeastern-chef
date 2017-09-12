@@ -3,7 +3,7 @@ import asyncio
 import os
 import shelve
 from chef.Configuration import Configuration, DiscordConfiguration, ConfigurationCreator
-from chef import ConfigurationSettingManager
+from chef.ConfigurationSettings import ConfigurationSettings
 
 client = discord.Client()
 
@@ -21,8 +21,8 @@ async def on_message(message : discord.Message):
         callbacks[message.channel.id].receive_new_message(message.content)
     else:
         if message.content.startswith("!register"):
-            settings = ConfigurationSettingManager.create_new_settings("discord", message.channel.id)
-            settings["discord-channel-id"] = message.channel.id
+            settings = ConfigurationSettings.create_new_settings(DiscordConfiguration.configuration_type, message.channel.id)
+            settings.set("discord-channel-id", message.channel.id)
             new_configuration = ConfigurationCreator.create_configuration_from_settings(settings)
 
 

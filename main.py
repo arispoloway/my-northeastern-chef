@@ -1,9 +1,8 @@
 from chef import DiscordDaemon
 import shelve
 from chef.Configuration import ConfigurationCreator
-from chef import ConfigurationSettingManager
+from chef.ConfigurationSettings import ConfigurationSettings
 
-
-ConfigurationSettingManager.initialize_channels()
+ConfigurationSettings.initialize_channels()
 
 DiscordDaemon.start_discord_daemon()
