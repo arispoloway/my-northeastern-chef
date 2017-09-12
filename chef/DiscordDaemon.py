@@ -18,7 +18,7 @@ async def on_message(message : discord.Message):
         await callbacks[message.channel.id].receive_new_message(message.content)
 
 
-def listen_to_channel(channel_id : str, callback : Configuration):
+def subscribe_to_channel(channel_id : str, callback : Configuration):
     callbacks[channel_id] = callback
 
 async def send_message(channel_id : str, message : str):

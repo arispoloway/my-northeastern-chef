@@ -1,8 +1,8 @@
-from chef import DiscordBot
+from chef import DiscordDaemon
 import shelve
 from chef.Configuration import ConfigurationCreator
 
 
 
 
-DiscordBot.start_discord_bot()
+DiscordDaemon.start_discord_bot()

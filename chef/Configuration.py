@@ -1,18 +1,14 @@
 from chef.MessageParser import *
 import abc
 import shelve
-from chef import DiscordBot
-
-
-
-
+from chef import DiscordDaemon
 
 
 
 class Configuration(abc.ABC):
 
-    def __init__(self, config : shelve):
-        self.config = config
+    def __init__(self, settings : shelve):
+        self.settings = settings
 
     @abc.abstractmethod
     async def send_message(self, message : str):
@@ -27,20 +23,20 @@ class Configuration(abc.ABC):
 
 class DiscordConfiguration(Configuration):
 
-    def __init__(self, config : shelve):
-        DiscordBot.listen_to_channel(config["discord-channel-id"], self)
-        super().__init__(config)
+    def __init__(self, settings : shelve):
+        DiscordDaemon.subscribe_to_channel(settings["discord-channel-id"], self)
+        super().__init__(settings)
 
     async def send_message(self, message : str):
-        await DiscordBot.send_message(self.config["discord-channel-id"], message)
+        await DiscordDaemon.send_message(self.settings["discord-channel-id"], message)
 
 
 
 class ConfigurationCreator():
 
     @staticmethod
-    def create_channel_from_config(config : shelve):
-        if (config["configuration-type"] == "discord-channel"):
-            return DiscordConfiguration(config)
+    def create_configuration_from_settings(settings : shelve):
+        if (settings["configuration-type"] == "discord-channel"):
+            return DiscordConfiguration(settings)
         else:
             raise Exception("Invalid channel configuration")
