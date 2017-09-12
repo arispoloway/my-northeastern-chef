@@ -28,5 +28,5 @@ async def send_message(channel_id : str, message : str):
     await client.send_message(channel, message)
 
 
-def start_discord_bot():
+def start_discord_daemon():
     client.run("token")
