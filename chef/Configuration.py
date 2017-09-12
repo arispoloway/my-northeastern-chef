@@ -2,6 +2,7 @@ from chef.MessageParser import *
 import abc
 import shelve
 from chef import DiscordDaemon
+import asyncio
 
 
 
@@ -11,14 +12,13 @@ class Configuration(abc.ABC):
         self.settings = settings
 
     @abc.abstractmethod
-    async def send_message(self, message : str):
+    def send_message(self, message : str):
         raise NotImplementedError()
 
-    async def receive_new_message(self, message : str):
+    def receive_new_message(self, message : str):
         query = MessageParser.parse_message(message)
-        response = query.apply(self)
-        if response:
-            await self.send_message(response)
+        result = query.apply(self)
+        return result
 
 
 class DiscordConfiguration(Configuration):
@@ -27,8 +27,8 @@ class DiscordConfiguration(Configuration):
         DiscordDaemon.subscribe_to_channel(settings["discord-channel-id"], self)
         super().__init__(settings)
 
-    async def send_message(self, message : str):
-        await DiscordDaemon.send_message(self.settings["discord-channel-id"], message)
+    def send_message(self, message : str):
+        asyncio.run_coroutine_threadsafe(DiscordDaemon.send_message(self.settings["discord-channel-id"], message), DiscordDaemon.client.loop)
 
 
 
@@ -36,7 +36,8 @@ class ConfigurationCreator():
 
     @staticmethod
     def create_configuration_from_settings(settings : shelve):
-        if (settings["configuration-type"] == "discord-channel"):
-            return DiscordConfiguration(settings)
+        if (settings["configuration-type"] == "discord"):
+            configuration = DiscordConfiguration(settings)
+            ConfigurationCreationQuery().apply(configuration)
         else:
             raise Exception("Invalid channel configuration")
