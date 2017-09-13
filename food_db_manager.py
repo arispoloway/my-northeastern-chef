@@ -73,8 +73,8 @@ class db_manager():
                             #for each filter on the food create a filtr object
                             f = Filter(id=filt['id'], name=filt['name'])
                             i.Filters.append(f)
-                        i.Meals.append(m)
-                        self.sess.merge(f)
+                        m.Items.append(i)
+            self.sess.merge(m)
         self.sess.commit()
 
     def get_data_from_api(self, d_hall, date=datetime.date.today()):
@@ -94,8 +94,10 @@ class db_manager():
 
         return data
 
-    def get_all_pizza_meals(self):
-        for m, i in self.sess.query(Meal, Item).join(Item.Meals, Item.Filters).filter(Filter.name=='Vegetarian').all():
+    def get_all_vege_meals(self):
+        for m, i in self.sess.query(Meal, Item).join(
+            Item.Meals, Item.Filters).filter(
+            Filter.name=='Vegetarian').order_by(Meal.date).all():
             print(m.name, ", ", m.d_hall, ", ", m.date, ", ", i.name)
 
 class Meal(Base):
