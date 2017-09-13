@@ -37,4 +37,4 @@ def send_message(channel_id : str, message : str):
 
 
 def start_discord_daemon():
-    client.run("MzU2NDU1NDIyODAwMTY2OTEy.DJbqdw.xzK441mGwBC70zQDBCxRrYe5Tak")
+    client.run("token")
