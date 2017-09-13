@@ -21,7 +21,7 @@ async def on_message(message : discord.Message):
         callbacks[message.channel.id].receive_new_message(message.content)
     else:
         if message.content.startswith("!register"):
-            settings = ConfigurationSettings.create_new_settings(DiscordConfiguration.configuration_type, message.channel.id)
+            settings = ConfigurationSettings.create_new_settings(DiscordConfiguration.get_configuration_type(), message.channel.id)
             settings.set("discord-channel-id", message.channel.id)
             new_configuration = ConfigurationCreator.create_configuration_from_settings(settings)
 

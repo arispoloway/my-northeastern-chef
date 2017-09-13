@@ -15,6 +15,11 @@ class Configuration(abc.ABC):
     def send_message(self, message : str):
         raise NotImplementedError()
 
+    @staticmethod
+    @abc.abstractmethod
+    def get_configuration_type():
+        raise NotImplementedError()
+
     def receive_new_message(self, message : str):
         query = MessageParser.parse_message(message)
         result = query.apply(self)
@@ -22,7 +27,6 @@ class Configuration(abc.ABC):
 
 
 class DiscordConfiguration(Configuration):
-    configuration_type = "discord"
 
     def __init__(self, settings : shelve):
         DiscordDaemon.subscribe_to_channel(settings.get("discord-channel-id"), self)
@@ -31,13 +35,17 @@ class DiscordConfiguration(Configuration):
     def send_message(self, message : str):
         DiscordDaemon.send_message(self.settings.get("discord-channel-id"), message)
 
+    @staticmethod
+    def get_configuration_type():
+        return "discord"
+
 
 
 class ConfigurationCreator():
 
     @staticmethod
     def start_configuration_from_settings(settings):
-        if (settings.get("configuration-type") == DiscordConfiguration.configuration_type):
+        if (settings.get("configuration-type") == DiscordConfiguration.get_configuration_type()):
             configuration = DiscordConfiguration(settings)
         else:
             raise Exception("Invalid channel configuration")
