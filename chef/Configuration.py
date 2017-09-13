@@ -29,16 +29,22 @@ class DiscordConfiguration(Configuration):
         super().__init__(settings)
 
     def send_message(self, message : str):
-        asyncio.run_coroutine_threadsafe(DiscordDaemon.send_message(self.settings.get("discord-channel-id"), message), DiscordDaemon.client.loop)
+        DiscordDaemon.send_message(self.settings.get("discord-channel-id"), message)
 
 
 
 class ConfigurationCreator():
 
     @staticmethod
-    def create_configuration_from_settings(settings : shelve):
+    def start_configuration_from_settings(settings):
         if (settings.get("configuration-type") == DiscordConfiguration.configuration_type):
             configuration = DiscordConfiguration(settings)
-            ConfigurationCreationQuery().apply(configuration)
         else:
             raise Exception("Invalid channel configuration")
+        return configuration
+
+
+    @staticmethod
+    def create_configuration_from_settings(settings):
+        configuration = ConfigurationCreator.start_configuration_from_settings(settings)
+        ConfigurationCreationQuery().apply(configuration)

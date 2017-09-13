@@ -11,7 +11,7 @@ callbacks = {}
 
 @client.event
 async def on_ready():
-    print('Connected!')
+    print("Discord Daemon Connected")
     print('Username: ' + client.user.name)
     print('ID: ' + client.user.id)
 
@@ -29,12 +29,12 @@ async def on_message(message : discord.Message):
 def subscribe_to_channel(channel_id : str, callback : DiscordConfiguration):
     callbacks[channel_id] = callback
 
-async def send_message(channel_id : str, message : str):
+def send_message(channel_id : str, message : str):
     channel = client.get_channel(channel_id)
     if channel == None:
         raise Exception("Invalid channel")
-    await client.send_message(channel, message)
+    asyncio.run_coroutine_threadsafe(client.send_message(channel, message), client.loop)
 
 
 def start_discord_daemon():
-    client.run("token")
+    client.run("MzU2NDU1NDIyODAwMTY2OTEy.DJbqdw.xzK441mGwBC70zQDBCxRrYe5Tak")

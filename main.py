@@ -6,3 +6,4 @@ from chef.ConfigurationSettings import ConfigurationSettings
 ConfigurationSettings.initialize_channels()
 
 DiscordDaemon.start_discord_daemon()
+

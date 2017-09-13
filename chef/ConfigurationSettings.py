@@ -51,7 +51,7 @@ class ConfigurationSettings(object):
         for item in ConfigurationSettings.get_configuration_listing():
             settings = ConfigurationSettings.open_settings(item["configuration-type"], item["name"])
 
-            channel = ConfigurationCreator.create_configuration_from_settings(settings)
+            channel = ConfigurationCreator.start_configuration_from_settings(settings)
             channels.append(channel)
 
         return channels
