@@ -5,3 +5,4 @@ __pycache__/
 *.dir
 configuration/
 *.db
+db_conn_settings.py
