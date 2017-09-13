@@ -34,18 +34,16 @@ class NextOccurrenceQuery(Query):
 
 
     def apply(self, configuration) -> str:
-        configuration.send_message("Next " + self.food + ", " + self.location + ", " + self.time)
+        configuration.send_message("Next: " + self.food + ", " + self.location + ", " + self.time)
 
 
 
 class CurrentStatusQuery(Query):
 
-    def __init__(self, food, dining_hall="", time=""):
+    def __init__(self, food, location=""):
         self.food = food
-        self.dining_hall = dining_hall
-        self.time = time
+        self.location = location
 
     def apply(self, configuration) -> str:
-        raise NotImplementedError()
-
+        configuration.send_message("Now: " + self.food + ", " + self.location)
 

@@ -22,6 +22,8 @@ class MessageParser(object):
         location = location.strip()
         time = time.strip()
 
+        return food, location, time
+
     @staticmethod
     def parse_message(message : str) -> Query:
         message = message.lower()
@@ -33,8 +35,15 @@ class MessageParser(object):
                 return InvalidQuery("Invalid food")
 
             return NextOccurrenceQuery(food, location, time)
+        if message.startswith("!now "):
+            split_message = message.split()[1:]
+            food, location, _ = MessageParser.food_location_time_parse(split_message)
+
+            if not food:
+                return InvalidQuery("Invalid food")
+
+            return CurrentStatusQuery(food, location)
 
         else:
             return InvalidQuery("")
-
 

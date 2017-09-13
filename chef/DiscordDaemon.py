@@ -4,6 +4,7 @@ import os
 import shelve
 from chef.Configuration import Configuration, DiscordConfiguration, ConfigurationCreator
 from chef.ConfigurationSettings import ConfigurationSettings
+import settings
 
 client = discord.Client()
 
@@ -37,4 +38,4 @@ def send_message(channel_id : str, message : str):
 
 
 def start_discord_daemon():
-    client.run("token")
+    client.run(settings.discord_token)

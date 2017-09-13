@@ -6,3 +6,4 @@ __pycache__/
 configuration/
 *.db
 db_conn_settings.py
+settings.py
