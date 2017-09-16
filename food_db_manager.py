@@ -1,18 +1,32 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, Date, ForeignKey 
-from sqlalchemy import and_
+from sqlalchemy import Table, Column, Integer, String, Date, ForeignKey, Enum
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from db_conn_settings import db_conn_settings as dbcs
-import requests
-import datetime
-import json
+from db_conn_settings import db_conn_settings as dbcs #settings for mysql server 
+import requests, datetime, json
 
 Base = declarative_base()
 
-class db_manager():
+class db_connection():
     def __init__(self):
+        self.engine = self.create_engine()
+        self.sess = sessionmaker(bind=self.engine)()
+        Base.metadata.create_all(self.engine)
+
+    def create_engine(self):
+        eng_string='''sqlite:///my_neu_chef.db'''
+        #code for mysql connection
+        #eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
+        #{0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
+        eng=create_engine(eng_string)
+        return eng
+
+
+class db_admin(db_connection):
+    def __init__(self):
+        super(db_admin, self).__init__()
         self.dining_halls_dict = {
         "Stetson West":"586d05e4ee596f6e6c04b528",
         "Stetson East":"586d05e4ee596f6e6c04b527",
@@ -21,18 +35,8 @@ class db_manager():
         self.site_id = "5751fd2b90975b60e048929a"
         self.base_url = "https://new.dineoncampus.com/v1/location/menu.json"
 
-        self.engine = self.create_engine()
-        self.sess = sessionmaker(bind=self.engine)()
-        Base.metadata.create_all(self.engine)
-
-    def create_engine(self):
-        eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
-        {0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
-        eng=create_engine(eng_string)
-        return eng
-
     def add_all_menus_for_day(self, date=datetime.date.today()):
-        print('Getting menus all dining halls for', date)
+        print('Getting all dining hall menus for', date)
 
         for d_hall in self.dining_halls_dict:
             if not self.sess.query(Meal).filter(
@@ -53,6 +57,13 @@ class db_manager():
         td = datetime.timedelta(days=1)
         d = datetime.date.today()
         for _ in range(7):
+            self.add_all_menus_for_day(d)
+            d+=td
+
+    def add_all_menus_for_next_month(self):
+        td = datetime.timedelta(days=1)
+        d = datetime.date.today()
+        for _ in range(30):
             self.add_all_menus_for_day(d)
             d+=td
 
@@ -94,11 +105,24 @@ class db_manager():
 
         return data
 
-    def get_all_vege_meals(self):
-        for m, i in self.sess.query(Meal, Item).join(
-            Item.Meals, Item.Filters).filter(
-            Filter.name=='Vegetarian').order_by(Meal.date).all():
-            print(m.name, ", ", m.d_hall, ", ", m.date, ", ", i.name)
+
+class db_user(db_connection):
+    def __init__(self):
+        super(db_user, self).__init__()
+
+    def get_next_occurances(self, food, d_halls=['IV', 'Stetson West', 'Stetson East'], max_occurances=5):
+        #create a query of meal and item colums
+        q = self.sess.query(Meal, Item).join(Item.Meals)
+        #filter for items like the one the user wants
+        f_string = '%' + food + '%'
+        q = q.filter(Item.name.like(f_string))
+        #filter for dining halls the user wants
+        q = q.filter(Meal.d_hall.in_(d_halls))
+        #order the results by date, then by meal
+        q = q.order_by(Meal.date, Meal.name)
+
+        return q.all()[max_occurances]
+
 
 class Meal(Base):
     __tablename__ = 'Meal'
@@ -106,7 +130,7 @@ class Meal(Base):
     id = Column(String(50), primary_key=True)
     date = Column(Date)
     d_hall = Column(String(50))
-    name = Column(String(50))
+    name = Column(Enum('Breakfast', 'Lunch', 'Dinner'))
 
     assoc_t = Table('Meal_Item_assoc', Base.metadata,
             Column('Meal_id', String(50), ForeignKey('Meal.id')),
@@ -119,6 +143,7 @@ class Meal(Base):
     def __repr__(self):
         return "<Meal(date='%s', d_hall='%s', name='%s')>"%(
             self.date, self.d_hall, self.name)
+
 
 class Item(Base):
     __tablename__ = 'Item'
@@ -138,6 +163,7 @@ class Item(Base):
     def __repr__(self):
         return "<Item(name='%s', calories='%s')>"%(
             self.name, self.calories)
+
 
 class Filter(Base):
     __tablename__ = 'Filter'
