@@ -16,10 +16,10 @@ class db_connection():
         Base.metadata.create_all(self.engine)
 
     def create_engine(self):
-        eng_string='''sqlite:///my_neu_chef.db'''
+        #eng_string='''sqlite:///my_neu_chef.db'''
         #code for mysql connection
-        #eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
-        #{0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
+        eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
+        {0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
         eng=create_engine(eng_string)
         return eng
 
@@ -78,13 +78,13 @@ class db_admin(db_connection):
                     #this conditional avoids a bug in the menu api
                     if len(food['nutrients'])>0:
                         #for each food item, create an item object
-                        i = Item(id=food['id'], name=food['name'], 
+                        i = Food_Item(id=food['id'], name=food['name'], 
                             calories=food['nutrients'][0]['value'])
                         for filt in food['filters']:
                             #for each filter on the food create a filtr object
                             f = Filter(id=filt['id'], name=filt['name'])
                             i.Filters.append(f)
-                        m.Items.append(i)
+                        m.Food_Items.append(i)
             self.sess.merge(m)
         self.sess.commit()
 
@@ -112,16 +112,16 @@ class db_user(db_connection):
 
     def get_next_occurances(self, food, d_halls=['IV', 'Stetson West', 'Stetson East'], max_occurances=5):
         #create a query of meal and item colums
-        q = self.sess.query(Meal, Item).join(Item.Meals)
+        q = self.sess.query(Meal, Food_Item).join(Food_Item.Meals)
         #filter for items like the one the user wants
         f_string = '%' + food + '%'
-        q = q.filter(Item.name.like(f_string))
+        q = q.filter(Food_Item.name.like(f_string))
         #filter for dining halls the user wants
         q = q.filter(Meal.d_hall.in_(d_halls))
         #order the results by date, then by meal
-        q = q.order_by(Meal.date, Meal.name)
+        q = q.order_by(Meal.date).order_by(Meal.name)
 
-        return q.all()[max_occurances]
+        return q.all()[:max_occurances]
 
 
 class Meal(Base):
@@ -132,11 +132,11 @@ class Meal(Base):
     d_hall = Column(String(50))
     name = Column(Enum('Breakfast', 'Lunch', 'Dinner'))
 
-    assoc_t = Table('Meal_Item_assoc', Base.metadata,
+    assoc_t = Table('Meal_Food_Item_assoc', Base.metadata,
             Column('Meal_id', String(50), ForeignKey('Meal.id')),
-            Column('Item_id', String(50), ForeignKey('Item.id')))
+            Column('Food_Item_id', String(50), ForeignKey('Food_Item.id')))
 
-    Items = relationship('Item',
+    Food_Items = relationship('Food_Item',
         secondary=assoc_t,
         backref='Meals')
 
@@ -145,23 +145,23 @@ class Meal(Base):
             self.date, self.d_hall, self.name)
 
 
-class Item(Base):
-    __tablename__ = 'Item'
+class Food_Item(Base):
+    __tablename__ = 'Food_Item'
 
     id = Column(String(50), primary_key=True)
-    name = Column(String(50))
+    name = Column(String(150))
     calories = Column(Integer)
 
-    assoc_t = Table('Item_Filter_assoc', Base.metadata,
-            Column('Item_id', String(50), ForeignKey('Item.id')),
+    assoc_t = Table('Food_Item_Filter_assoc', Base.metadata,
+            Column('Food_Item_id', String(50), ForeignKey('Food_Item.id')),
             Column('Filter_id', String(50), ForeignKey('Filter.id')))
 
     Filters = relationship('Filter',
         secondary=assoc_t,
-        backref='Items')
+        backref='Food_Items')
 
     def __repr__(self):
-        return "<Item(name='%s', calories='%s')>"%(
+        return "<Food_Item(name='%s', calories='%s')>"%(
             self.name, self.calories)
 
 
@@ -169,7 +169,7 @@ class Filter(Base):
     __tablename__ = 'Filter'
 
     id = Column(String(50), primary_key=True)
-    name = Column(String(50))
+    name = Column(String(150))
 
     def __repr__(self):
         return "<Filter(name='%s')>"%(self.name)
