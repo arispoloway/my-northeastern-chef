@@ -1,9 +1,10 @@
-import discord
 import asyncio
-import os
-import shelve
-from chef.Configuration import Configuration, DiscordConfiguration, ConfigurationCreator
-from chef.ConfigurationSettings import ConfigurationSettings
+
+import discord
+
+from chef.configuration.ConfigurationCreator import ConfigurationCreator
+from chef.configuration.ConfigurationSettings import ConfigurationSettings
+from chef.configuration.DiscordConfiguration import DiscordConfiguration
 
 client = discord.Client()
 

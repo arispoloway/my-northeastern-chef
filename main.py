@@ -1,7 +1,6 @@
-from chef import DiscordDaemon
-from chef.ConfigurationSettings import ConfigurationSettings
 import settings
-
+from chef import DiscordDaemon
+from chef.configuration.ConfigurationSettings import ConfigurationSettings
 
 ConfigurationSettings.initialize_channels()
 
