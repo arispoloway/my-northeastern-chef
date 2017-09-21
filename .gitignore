@@ -3,7 +3,7 @@ __pycache__/
 *.bak
 *.dat
 *.dir
-configuration/
+configuration_settings/
 *.db
 db_conn_settings.py
 settings.py
