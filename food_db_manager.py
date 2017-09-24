@@ -128,7 +128,16 @@ class db_user(db_connection):
         #filter for dining halls the user wants
         q = q.filter(Meal.d_hall.in_(d_halls))
         #for meals available from today on
-        q = q.filter(Meal.date >= datetime.date.today())
+        meal = ''
+        now_hours = datetime.datetime.now().time().hour
+        if now_hours < 10:
+            meal = 'Breakfast'
+        elif now_hours < 5:
+            meal = 'Lunch'
+        else:
+            meal = 'Dinner'
+        q = q.filter(or_(Meal.date > datetime.date.today(), 
+            and_( Meal.date == datetime.date.today(), Meal.name >= meal)))
         #for meals available during and after the current meal
 
         #order the results by date, then by meal

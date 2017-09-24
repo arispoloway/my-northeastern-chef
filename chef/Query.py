@@ -36,16 +36,17 @@ class NextOccurrenceQuery(Query):
 
 
     def apply(self, configuration) -> str:
-        answer = self.db_user.get_next_occurances(self.food)
+        answer = self.user.get_next_occurances(self.food)
         message = ""
         if not answer:
-            message = "Sorry, we couldn't find anything like" + self.food + "in our database :("
+            message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
         else:
             meal = answer[0][0]
             food_item = answer[0][1]
+            self.food = food_item.name
             self.location = meal.d_hall
             self.time = meal.name
-            message = "Next: " + self.food + ", " + self.location + ", " + self.time
+            message = "Next: " + self.food + ", " + self.location + ", " + self.time + ", " + meal.date.strftime('%m/%d/%Y')
 
         configuration.send_message(message)
         return message
