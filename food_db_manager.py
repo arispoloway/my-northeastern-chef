@@ -11,8 +11,7 @@ Base = declarative_base()
 
 #Represents an object thats connected to the database with certain settings
 class db_connection():
-    def __init__(self, db_name):
-        self.db_name = db_name
+    def __init__(self):
         self.engine = self.create_engine()
         self.sess = sessionmaker(bind=self.engine)()
         Base.metadata.create_all(self.engine)
@@ -21,14 +20,14 @@ class db_connection():
         #eng_string='''sqlite:///my_neu_chef.db'''
         #code for mysql connection
         eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
-        {0[serverName]}:{0[portNumber]}/{1}'''.format(dbcs, self.db_name)
+        {0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
         eng=create_engine(eng_string)
         return eng
 
 #Represents a database administrator who can add menus to the database
 class db_admin(db_connection):
-    def __init__(self, db_name="my_neu_chef"):
-        super(db_admin, self).__init__(db_name)
+    def __init__(self):
+        super(db_admin, self).__init__()
         self.dining_halls_dict = {
         "Stetson West":"586d05e4ee596f6e6c04b528",
         "Stetson East":"586d05e4ee596f6e6c04b527",
@@ -114,8 +113,8 @@ class db_admin(db_connection):
 
 #Represents a database user who can query the database 
 class db_user(db_connection):
-    def __init__(self, db_name="my_neu_chef"):
-        super(db_user, self).__init__(db_name)
+    def __init__(self):
+        super(db_user, self).__init__()
 
     #TODO: check the date and time as part of the query
     #get the next occurances of the given food in the given dining halls
@@ -128,8 +127,10 @@ class db_user(db_connection):
         q = q.filter(Food_Item.name.like(f_string))
         #filter for dining halls the user wants
         q = q.filter(Meal.d_hall.in_(d_halls))
-        #return only meals from today on
+        #for meals available from today on
         q = q.filter(Meal.date >= datetime.date.today())
+        #for meals available during and after the current meal
+
         #order the results by date, then by meal
         q = q.order_by(Meal.date).order_by(Meal.name)
 
