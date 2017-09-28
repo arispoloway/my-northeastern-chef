@@ -14,5 +14,5 @@ class DiscordConfiguration(Configuration):
         DiscordDaemon.send_message(self.settings.get("discord-channel-id"), message)
 
     @staticmethod
-    def get_configuration_type():
+    def get_configuration_type() -> str:
         return "discord"

@@ -5,7 +5,7 @@ import abc
 class Query(abc.ABC):
 
     @abc.abstractmethod
-    def apply(self, configuration) -> str:
+    def apply(self, configuration):
         raise NotImplementedError("")
 
 
@@ -22,7 +22,7 @@ class InvalidQuery(Query):
     def __init__(self, message):
         self.message = message
 
-    def apply(self, configuration) -> str:
+    def apply(self, configuration):
         if self.message:
             configuration.send_message(self.message)
 
@@ -35,7 +35,7 @@ class NextOccurrenceQuery(Query):
         self.time = time
 
 
-    def apply(self, configuration) -> str:
+    def apply(self, configuration):
         answer = configuration.get_database().get_next_occurances(self.food)
         message = ""
         if not answer:
@@ -59,7 +59,7 @@ class CurrentStatusQuery(Query):
         self.food = food
         self.location = location
 
-    def apply(self, configuration) -> str:
+    def apply(self, configuration):
         answer = configuration.get_database().get_current_status()
         message = ""
         if not answer:

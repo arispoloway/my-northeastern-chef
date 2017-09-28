@@ -19,7 +19,7 @@ class Configuration(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def get_configuration_type():
+    def get_configuration_type() -> str:
         raise NotImplementedError()
 
     def receive_new_message(self, message : str):
