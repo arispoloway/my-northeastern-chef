@@ -4,8 +4,9 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from db_conn_settings import db_conn_settings as dbcs #settings for mysql server 
+from settings import db_conn_settings as dbcs #settings for mysql server
 import requests, datetime, json
+from chef.databases.FoodDatabase import FoodDatabase
 
 Base = declarative_base()
 
@@ -112,7 +113,7 @@ class db_admin(db_connection):
         return data
 
 #Represents a database user who can query the database 
-class db_user(db_connection):
+class db_user(db_connection, FoodDatabase):
     def __init__(self):
         super(db_user, self).__init__()
 

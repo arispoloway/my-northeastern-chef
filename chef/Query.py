@@ -1,5 +1,7 @@
 import abc
-from food_db_manager import db_user
+
+from chef.databases.NeuFoodDatabase import db_user
+
 
 class Query(abc.ABC):
 
