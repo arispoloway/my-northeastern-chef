@@ -43,6 +43,8 @@ class MessageParser(object):
                 return InvalidQuery("Invalid food")
 
             return CurrentStatusQuery(food, location)
+        if message.startswith("!test"):
+            return TestQuery()
 
         else:
             return InvalidQuery("")

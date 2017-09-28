@@ -1,5 +1,6 @@
 import abc
 
+from chef.Scheduler import Scheduler
 
 
 class Query(abc.ABC):
@@ -74,4 +75,9 @@ class CurrentStatusQuery(Query):
         configuration.send_message(message)
         return message
         #configuration.send_message("Now: " + self.food + ", " + self.location)
+
+class TestQuery(Query):
+
+    def apply(self, configuration):
+        configuration.send_message("Testing!")
 
