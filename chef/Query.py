@@ -1,6 +1,5 @@
 import abc
 
-from chef.databases.NeuFoodDatabase import db_user
 
 
 class Query(abc.ABC):
@@ -34,11 +33,10 @@ class NextOccurrenceQuery(Query):
         self.food = food
         self.location = location
         self.time = time
-        self.user = db_user()
 
 
     def apply(self, configuration) -> str:
-        answer = self.user.get_next_occurances(self.food)
+        answer = configuration.get_database().get_next_occurances(self.food)
         message = ""
         if not answer:
             message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
@@ -60,10 +58,9 @@ class CurrentStatusQuery(Query):
     def __init__(self, food, location=""):
         self.food = food
         self.location = location
-        self.user = db_user()
 
     def apply(self, configuration) -> str:
-        answer = self.user.get_current_status()
+        answer = configuration.get_database().get_current_status()
         message = ""
         if not answer:
             message = "Sorry, we couldn't find anything :("
