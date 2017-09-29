@@ -2,7 +2,7 @@ import os
 import shelve
 import sys
 
-from chef.configuration.ConfigurationCreator import ConfigurationCreator
+import chef.configuration.ConfigurationCreator
 
 base_setting_path = os.path.dirname(os.path.abspath(sys.argv[0]))+ "/configuration_settings/"
 if not os.path.exists(base_setting_path):
@@ -51,7 +51,7 @@ class ConfigurationSettings(object):
         for item in ConfigurationSettings.get_configuration_listing():
             settings = ConfigurationSettings.open_settings(item["configuration-type"], item["name"])
 
-            channel = ConfigurationCreator.start_configuration_from_settings(settings)
+            channel = chef.configuration.ConfigurationCreator.ConfigurationCreator.start_configuration_from_settings(settings)
             channels.append(channel)
 
         return channels

@@ -1,6 +1,7 @@
 import threading
 import settings
-from chef import DiscordDaemon
+#import chef.DiscordDaemon
+import chef.MessengerDaemon
 from chef.Scheduler import Scheduler
 from chef.configuration.ConfigurationSettings import ConfigurationSettings
 import asyncio
@@ -12,16 +13,17 @@ Scheduler.initialize()
 
 def asyncio_wrapper_thread(event_loop, func, args):
     asyncio.set_event_loop(event_loop)
-    func(args)
+    func(*args)
 
 
 def launch_daemon_thread(func, args):
-    t = threading.Thread(target=asyncio_wrapper_thread, args=(asyncio.get_event_loop(), func) + args)
+    t = threading.Thread(target=asyncio_wrapper_thread, args=(asyncio.get_event_loop(), func) + (args,))
     t.daemon = True
     t.start()
     return t
 
 
-launch_daemon_thread(DiscordDaemon.start_discord_daemon, (settings.discord_token,))
+launch_daemon_thread(chef.DiscordDaemon.start_discord_daemon, (settings.discord_token,))
+launch_daemon_thread(chef.MessengerDaemon.start_messenger_daemon, (settings.messenger_email, settings.messenger_password,))
 
 Scheduler.run()
