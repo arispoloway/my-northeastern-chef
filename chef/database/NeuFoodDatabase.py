@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from settings import db_conn_settings as dbcs #settings for mysql server
 import requests, datetime, json
-from chef.databases.FoodDatabase import FoodDatabase
+from chef.database.FoodDatabase import FoodDatabase
 
 Base = declarative_base()
 

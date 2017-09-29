@@ -1,7 +1,7 @@
 import shelve
 
-from chef import DiscordDaemon
 from chef.configuration.Configuration import Configuration
+from chef.messagingdaemon import DiscordDaemon
 
 
 class DiscordConfiguration(Configuration):

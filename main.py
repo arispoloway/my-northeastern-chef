@@ -1,12 +1,10 @@
+import asyncio
 import threading
+
 import settings
-
-from chef import MessengerDaemon, DiscordDaemon
-
 from chef.Scheduler import Scheduler
 from chef.configuration.ConfigurationSettings import ConfigurationSettings
-import asyncio
-
+from chef.messagingdaemon import MessengerDaemon, DiscordDaemon
 
 ConfigurationSettings.initialize_channels()
 Scheduler.initialize()

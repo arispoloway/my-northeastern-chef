@@ -1,7 +1,7 @@
 import shelve
 
-from chef import MessengerDaemon
 from chef.configuration.Configuration import Configuration
+from chef.messagingdaemon import MessengerDaemon
 
 
 class MessengerConfiguration(Configuration):

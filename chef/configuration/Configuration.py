@@ -1,7 +1,7 @@
 import shelve
 
 from chef.MessageParser import *
-from chef.databases.NeuFoodDatabase import db_user
+from chef.database.NeuFoodDatabase import db_user
 
 
 class Configuration(abc.ABC):
