@@ -1,7 +1,8 @@
 import threading
 import settings
-#import chef.DiscordDaemon
-import chef.MessengerDaemon
+
+from chef import MessengerDaemon, DiscordDaemon
+
 from chef.Scheduler import Scheduler
 from chef.configuration.ConfigurationSettings import ConfigurationSettings
 import asyncio
@@ -23,7 +24,7 @@ def launch_daemon_thread(func, args):
     return t
 
 
-launch_daemon_thread(chef.DiscordDaemon.start_discord_daemon, (settings.discord_token,))
-launch_daemon_thread(chef.MessengerDaemon.start_messenger_daemon, (settings.messenger_email, settings.messenger_password,))
+launch_daemon_thread(DiscordDaemon.start_discord_daemon, (settings.discord_token,))
+launch_daemon_thread(MessengerDaemon.start_messenger_daemon, (settings.messenger_email, settings.messenger_password,))
 
 Scheduler.run()
