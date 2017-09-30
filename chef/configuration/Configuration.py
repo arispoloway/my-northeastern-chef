@@ -1,7 +1,6 @@
 import shelve
 
 from chef.MessageParser import *
-from chef.database.NeuFoodDatabase import db_user
 
 
 class Configuration(abc.ABC):
@@ -13,9 +12,8 @@ class Configuration(abc.ABC):
     def send_message(self, message : str):
         raise NotImplementedError()
 
-
     def get_database(self):
-        return db_user()   # in the future this should use self.settings to determine which database
+        return FoodDatabaseSelector.get_school_database(self.settings.get("school"))
 
     @staticmethod
     @abc.abstractmethod

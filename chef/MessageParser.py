@@ -46,6 +46,13 @@ class MessageParser(object):
         if message.startswith("!test"):
             return TestQuery()
 
+        if message.startswith("!school"):
+            split_message = message.split()[1:]
+            if len(split_message) != 0:
+                return SelectSchoolQuery(" ".join(split_message))
+            else:
+                return InvalidQuery("No school specified!")
+
         else:
             return InvalidQuery("")
 

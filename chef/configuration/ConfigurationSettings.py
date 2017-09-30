@@ -33,6 +33,7 @@ class ConfigurationSettings(object):
 
         s = ConfigurationSettings.open_settings(configuration_type, filename)
         s.set("configuration-type", configuration_type)
+        s.set("school", "")
 
         ConfigurationSettings.add_to_configuration_listing(configuration_type, filename)
 
