@@ -47,7 +47,7 @@ class MessageParser(object):
             return TestQuery()
         
         if message.startswith("!help"):
-            return HelpQuery("")
+            return HelpQuery()
 
         if message.startswith("!school"):
             split_message = message.split()[1:]
@@ -56,6 +56,6 @@ class MessageParser(object):
             else:
                 return InvalidQuery("No school specified!")
         else:
-            return InvalidQuery()
+            return InvalidQuery("")
         
 
