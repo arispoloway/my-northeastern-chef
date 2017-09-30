@@ -45,6 +45,9 @@ class MessageParser(object):
             return CurrentStatusQuery(food, location)
         if message.startswith("!test"):
             return TestQuery()
+        
+        if message.startswith("!help"):
+            return HelpQuery("")
 
         if message.startswith("!school"):
             split_message = message.split()[1:]
@@ -52,7 +55,7 @@ class MessageParser(object):
                 return SelectSchoolQuery(" ".join(split_message))
             else:
                 return InvalidQuery("No school specified!")
-
         else:
             return InvalidQuery("")
+        
 

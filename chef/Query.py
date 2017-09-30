@@ -101,4 +101,8 @@ class TestQuery(Query):
 
     def apply(self, configuration):
         configuration.send_message("Testing!")
+        
+class HelpQuery(Query):
+    def apply(self, configuration):
+        configuration.send_message("Current Commands: \n !test \n !next <food>")
 
