@@ -1,11 +1,11 @@
-from chef.database import NeuFoodDatabase
+from chef.database import NeuFoodModels
 
 slang = {
     "northeastern": "neu"
 }
 
 databases = {
-    "neu": NeuFoodDatabase.db_user()
+    "neu": NeuFoodModels.db_user()
 }
 
 

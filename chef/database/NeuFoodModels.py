@@ -1,34 +1,26 @@
-from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, Date, ForeignKey, Enum
-from sqlalchemy import and_, or_
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from settings import db_conn_settings as dbcs #settings for mysql server
 import requests, datetime, json
-from chef.database.FoodDatabase import FoodDatabase
+
+from sqlalchemy import *
+from sqlalchemy.orm import (scoped_session, sessionmaker, relationship,
+                            backref)
+from sqlalchemy.ext.declarative import declarative_base
+
+eng_string='''mysql+mysqlconnector://neu_chef_user:weewooweewoo56@
+        localhost:3306/my_neu_chef'''#.format(dbcs)
+engine=create_engine(eng_string)
+
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
 
 Base = declarative_base()
+Base.query = db_session.query_property()
 
-#Represents an object thats connected to the database with certain settings
-class db_connection():
-    def __init__(self):
-        self.engine = self.create_engine()
-        self.sess = sessionmaker(bind=self.engine)()
-        Base.metadata.create_all(self.engine)
-
-    def create_engine(self):
-        #eng_string='''sqlite:///my_neu_chef.db'''
-        #code for mysql connection
-        eng_string='''mysql+mysqlconnector://{0[userName]}:{0[password]}@
-        {0[serverName]}:{0[portNumber]}/{0[dbName]}'''.format(dbcs)
-        eng=create_engine(eng_string)
-        return eng
+Base.metadata.create_all(engine)
 
 #Represents a database administrator who can add menus to the database
-class db_admin(db_connection):
+class db_admin():
     def __init__(self):
-        super(db_admin, self).__init__()
         self.dining_halls_dict = {
         "Stetson West":"586d05e4ee596f6e6c04b528",
         "Stetson East":"586d05e4ee596f6e6c04b527",
@@ -42,7 +34,7 @@ class db_admin(db_connection):
         print('Getting all dining hall menus for', date)
 
         for d_hall in self.dining_halls_dict:
-            if not self.sess.query(Meal).filter(
+            if not db_session.query(Meal).filter(
                 and_ (Meal.date == date, Meal.d_hall == d_hall)).count() > 0:
                 while True:
                     try:
@@ -91,8 +83,8 @@ class db_admin(db_connection):
                             f = Filter(id=filt['id'], name=filt['name'])
                             i.Filters.append(f)
                         m.Food_Items.append(i)
-            self.sess.merge(m)
-        self.sess.commit()
+            db_session.merge(m)
+        db_session.commit()
 
     #retrieve data from the online menu api for the given dining hall/date
     def get_data_from_api(self, d_hall, date=datetime.date.today()):
@@ -111,45 +103,6 @@ class db_admin(db_connection):
         data = json.loads(requests.get(self.base_url, headers=headers, params=params).text)
 
         return data
-
-#Represents a database user who can query the database 
-class db_user(db_connection, FoodDatabase):
-    def __init__(self):
-        super(db_user, self).__init__()
-
-    #TODO: check the date and time as part of the query
-    #get the next occurances of the given food in the given dining halls
-    def get_next_occurances(self, food, d_halls=['IV', 'Stetson West', 
-        'Stetson East'], max_occurances=5):
-        #create a query of meal and item colums
-        q = self.sess.query(Meal, Food_Item).join(Food_Item.Meals)
-        #filter for items like the one the user wants
-        f_string = '%' + food + '%'
-        q = q.filter(Food_Item.name.like(f_string))
-        #filter for dining halls the user wants
-        q = q.filter(Meal.d_hall.in_(d_halls))
-        #for meals available from today on
-        meal = ''
-        now_hours = datetime.datetime.now().time().hour
-        if now_hours < 10:
-            meal = 'Breakfast'
-        elif now_hours < 5:
-            meal = 'Lunch'
-        else:
-            meal = 'Dinner'
-        q = q.filter(or_(Meal.date > datetime.date.today(), 
-            and_( Meal.date == datetime.date.today(), Meal.name >= meal)))
-        #for meals available during and after the current meal
-
-        #order the results by date, then by meal
-        q = q.order_by(Meal.date).order_by(Meal.name)
-
-        return q.all()[:max_occurances]
-
-    def get_current_status(self, somethingelse):
-        #not too sure what this should be yet
-        print("Get current status unimplemented")
-        return []
 
 #Represents a meal with a date, location, name and items
 class Meal(Base):
