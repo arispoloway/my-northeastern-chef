@@ -45,7 +45,9 @@ class MessageParser(object):
             return CurrentStatusQuery(food, location)
         if message.startswith("!test"):
             return TestQuery()
-
+        if message.startswith("!help"):
+            return HelpQuery("")
         else:
             return InvalidQuery("")
+        
 
