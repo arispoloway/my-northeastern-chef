@@ -1,8 +1,6 @@
 import abc
 
-from chef.Scheduler import Scheduler
 from chef.database import FoodDatabaseSelector
-from chef.database.FoodDatabase import FoodDatabase
 
 
 def school_required(func):
