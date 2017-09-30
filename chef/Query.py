@@ -104,5 +104,5 @@ class TestQuery(Query):
         
 class HelpQuery(Query):
     def apply(self, configuration):
-        configuration.send_message("Current Commands: \n !test \n !next <food>")
+        configuration.send_message("Current Commands: \n !test : Tests is the bot is responding. \n !next <food> : When is <food> showing up next? \n !school <school> : Change school.")
 
