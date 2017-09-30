@@ -38,9 +38,9 @@ Find 'Northeastern Chef' on Facebook, and add them as your friend.
 
 Your Campus Chef will respond to the following commands once registered:
 
-	!help				-list commands
-	!test				-test whether the bot is responding.
-	!school <school> 		-change which <school> to take info from.
-	!next <food>			-find the next occurence of <food> at <school>
+	!help               -list commands
+	!test               -test whether the bot is responding.
+	!school <school>    -change which <school> to take info from.
+	!next <food>        -find the next occurence of <food> at <school>
 	
 
