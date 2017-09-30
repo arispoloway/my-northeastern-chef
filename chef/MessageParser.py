@@ -56,6 +56,6 @@ class MessageParser(object):
             else:
                 return InvalidQuery("No school specified!")
         else:
-            return InvalidQuery("")
+            return InvalidQuery()
         
 
