@@ -2,12 +2,11 @@ import asyncio
 import threading
 
 import settings
-from chef.Scheduler import Scheduler
+from chef import Scheduler
 from chef.configuration.ConfigurationSettings import ConfigurationSettings
 from chef.messagingdaemon import MessengerDaemon, DiscordDaemon
 
 ConfigurationSettings.initialize_channels()
-Scheduler.initialize()
 
 
 def asyncio_wrapper_thread(event_loop, func, args):
