@@ -55,12 +55,21 @@ class NextOccurrenceQuery(Query):
         q = q.format(configuration.get_school(), self.food, self.count)
         answer = json.loads(client.execute(q))['data']['nextOccurance']
 
+
         if not answer:
             message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
         else:
-            for entry in answer:
-                message = "Next: " + entry['foodName'] + ", " + entry['dHall'] + ", " + entry['time'] + ", " + entry['date']
-                configuration.send_message(message)
+            if len(answer) == 1:
+                message = "I found this item:\n"
+            else:
+                message = "I found these items:\n"
+
+            for index, entry in enumerate(answer):
+                message += "'" + entry['foodName'] + "' at '" + entry['dHall'] + "' for '" + entry['time'] + ", " + entry['date'] + "'"
+                if index != len(answer) - 1:
+                    message += "\n"
+
+        configuration.send_message(message)
 
         return message
 

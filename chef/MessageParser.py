@@ -4,11 +4,20 @@ from chef.Query import *
 class MessageParser(object):
 
     @staticmethod
-    def food_location_time_parse(split_message : str) -> (str, str, str):
+    def count_food_location_time_parse(split_message) -> (int, str, str, str):
+        count = 0
         food = ""
         location = ""
         time = ""
         last_keyword = ""
+
+        if split_message:
+            try:
+                count = int(split_message[0])
+                split_message = split_message[1:]
+            except:
+                pass
+
         for word in split_message:
             if word == "at" or word == "for":
                 last_keyword = word
@@ -22,22 +31,25 @@ class MessageParser(object):
         location = location.strip()
         time = time.strip()
 
-        return food, location, time
+        return count, food, location, time
 
     @staticmethod
     def parse_message(message : str) -> Query:
         message = message.lower()
         if message.startswith("!next "):
             split_message = message.split()[1:]
-            food, location, time = MessageParser.food_location_time_parse(split_message)
+            count, food, location, time = MessageParser.count_food_location_time_parse(split_message)
 
             if not food:
                 return InvalidQuery("Invalid food")
 
+            if count:
+                return NextOccurrenceQuery(food, location, time, count)
             return NextOccurrenceQuery(food, location, time)
+
         if message.startswith("!now "):
             split_message = message.split()[1:]
-            food, location, _ = MessageParser.food_location_time_parse(split_message)
+            count, food, location, _ = MessageParser.count_food_location_time_parse(split_message)
 
             if not food:
                 return InvalidQuery("Invalid food")
