@@ -1,6 +1,7 @@
 import abc
 from graphqlclient import GraphQLClient
 
+from chef import SchoolSelector
 from settings import graphql_settings
 
 client = GraphQLClient('http://{0[host]}:{0[port]}/{0[path]}?'.format(graphql_settings))
@@ -94,7 +95,7 @@ class SelectSchoolQuery(Query):
         self.school = school
 
     def apply(self, configuration):
-        if not FoodDatabaseSelector.get_school_database(self.school):
+        if not SchoolSelector.get_school(self.school):
             configuration.send_message("Invalid school!")
         else:
             configuration.settings.set("school", self.school)
