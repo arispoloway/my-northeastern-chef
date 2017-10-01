@@ -1,12 +1,14 @@
 import abc
 from graphqlclient import GraphQLClient
 
-client = GraphQLClient('http://localhost:5000/graphql?/')
+from settings import graphql_settings
+
+client = GraphQLClient('http://{0[host]}:{0[port]}/{0[path]?'.format(graphql_settings))
 
 
 def school_required(func):
     def wrapper(self, configuration):
-        if not configuration.get_database():
+        if not configuration.get_school():
             configuration.send_message("No school selected. Use !school <name> to select a school!")
             return
         func(self, configuration)
@@ -39,17 +41,15 @@ class InvalidQuery(Query):
 
 class NextOccurrenceQuery(Query):
 
-    def __init__(self, food, school='northeastern', location="", time="", count=1):
+    def __init__(self, food, location="", time="", count=1):
         self.food = food
         self.location = location
         self.time = time
         self.count = count
-        self.school = school
 
     @school_required
     def apply(self, configuration):
-        answer = client.execute('{nextOccurance(school: {}, food: {}, max: {}) {foodName, time, dHall, date}}').format(self.school, self.food, self.count)
-        message = ""
+        answer = client.execute('{nextOccurance(school: {}, food: {}, max: {}) {foodName, time, dHall, date}}').format(configuration.get_school(), self.food, self.count)
         if not answer:
             message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
         else:

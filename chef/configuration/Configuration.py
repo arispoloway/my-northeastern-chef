@@ -1,5 +1,6 @@
 import shelve
 
+from chef import SchoolSelector
 from chef.MessageParser import *
 
 
@@ -12,8 +13,8 @@ class Configuration(abc.ABC):
     def send_message(self, message : str):
         raise NotImplementedError()
 
-    def get_database(self):
-        return FoodDatabaseSelector.get_school_database(self.settings.get("school"))
+    def get_school(self):
+        return SchoolSelector.get_school(self.settings.get("school"))
 
     @staticmethod
     @abc.abstractmethod
