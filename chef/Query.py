@@ -1,6 +1,7 @@
 import abc
+from graphqlclient import GraphQLClient
 
-from chef.database import FoodDatabaseSelector
+client = GraphQLClient('http://localhost:5000/graphql?/')
 
 
 def school_required(func):
@@ -38,14 +39,16 @@ class InvalidQuery(Query):
 
 class NextOccurrenceQuery(Query):
 
-    def __init__(self, food, location="", time=""):
+    def __init__(self, food, school='northeastern', location="", time="", count=1):
         self.food = food
         self.location = location
         self.time = time
+        self.count = count
+        self.school = school
 
     @school_required
     def apply(self, configuration):
-        answer = configuration.get_database().get_next_occurances(self.food)
+        answer = client.execute('{nextOccurance(school: {}, food: {}, max: {}) {foodName, time, dHall, date}}').format(self.school, self.food, self.count)
         message = ""
         if not answer:
             message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
@@ -69,6 +72,9 @@ class CurrentStatusQuery(Query):
 
     @school_required
     def apply(self, configuration):
+        print('CurrentStatusQuery.apply unimplemented')
+        return "Unimplemented"
+
         answer = configuration.get_database().get_current_status()
         if not answer:
             message = "Sorry, we couldn't find anything :("
