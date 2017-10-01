@@ -3,7 +3,7 @@ from graphqlclient import GraphQLClient
 
 from settings import graphql_settings
 
-client = GraphQLClient('http://{0[host]}:{0[port]}/{0[path]?'.format(graphql_settings))
+client = GraphQLClient('http://{0[host]}:{0[port]}/{0[path]}?'.format(graphql_settings))
 
 
 def school_required(func):
