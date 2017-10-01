@@ -1,5 +1,6 @@
 import abc
 from graphqlclient import GraphQLClient
+import json
 
 from chef import SchoolSelector
 from settings import graphql_settings
@@ -50,18 +51,17 @@ class NextOccurrenceQuery(Query):
 
     @school_required
     def apply(self, configuration):
-        answer = client.execute('{nextOccurance(school: {}, food: {}, max: {}) {foodName, time, dHall, date}}').format(configuration.get_school(), self.food, self.count)
+        q = '{{nextOccurance(school: "{}", food: "{}", max: {}) {{foodName, time, dHall, date}}}}'
+        q = q.format(configuration.get_school(), self.food, self.count)
+        answer = json.loads(client.execute(q))['data']['nextOccurance']
+
         if not answer:
             message = "Sorry, we couldn't find anything like " + self.food + " in our database :("
         else:
-            meal = answer[0][0]
-            food_item = answer[0][1]
-            self.food = food_item.name
-            self.location = meal.d_hall
-            self.time = meal.name
-            message = "Next: " + self.food + ", " + self.location + ", " + self.time + ", " + meal.date.strftime('%m/%d/%Y')
+            for entry in answer:
+                message = "Next: " + entry['foodName'] + ", " + entry['dHall'] + ", " + entry['time'] + ", " + entry['date']
+                configuration.send_message(message)
 
-        configuration.send_message(message)
         return message
 
 
