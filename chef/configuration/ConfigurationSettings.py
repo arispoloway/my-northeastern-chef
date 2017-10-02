@@ -67,5 +67,10 @@ class ConfigurationSettings(object):
     def get(self, key):
         return self.shelve[key]
 
+    def has_key(self, key):
+        return key in self.shelve
+
+
+
 
 

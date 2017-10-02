@@ -1,8 +1,10 @@
+from pytz import timezone
+
 slang = {
     "neu":"northeastern"
 }
 
-schools = ["northeastern"]
+schools = {"northeastern": timezone("EST")}
 
 def get_school(school: str):
     school = school.lower()
